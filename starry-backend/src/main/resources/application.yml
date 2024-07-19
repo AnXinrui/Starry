@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: starry
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/starry
+    username: root
+    password: 123456
+  session:
+    timeout: 86400 # session超时时间
+    store-type: redis # session存储类型
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 1
+      password: 123456
+
+
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        domain: localhost
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false  # 驼峰命名映射
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl     # 打印sql
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除字段名
+      logic-delete-value: 1 # 逻辑已删除值
+      logic-not-delete-value: 0 # 逻辑未删除值
+#    global-config:
+#      # 数据库相关配置
+#      db-config:
+#        #字段策略 IGNORED:"忽略判断",NOT_NULL:"非 NULL 判断"),NOT_EMPTY:"非空判断"
+#        field-strategy: not_null
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.axr.starrybackend.controller
+# knife4j的增强配置，不需要增强可以不配
+#knife4j:
+#  enable: true
+#  setting:
+#    language: zh_cn
