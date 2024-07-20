@@ -5,7 +5,9 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 const onClickLeft = () => router.back();
-const onClickRight = () => showSuccessToast('按钮');
+const onClickRight = () => {
+  router.push('/user/search');
+}
 </script>
 
 <template>
@@ -25,8 +27,8 @@ const onClickRight = () => showSuccessToast('按钮');
   <van-tabbar route>
 <!--    <van-tabbar-item replace to="/login" icon="home-o">标签</van-tabbar-item>-->
 <!--    <van-tabbar-item replace to="/search" icon="search">标签</van-tabbar-item>-->
-    <van-tabbar-item icon="home-o">标签</van-tabbar-item>
-    <van-tabbar-item icon="search">标签</van-tabbar-item>
+    <van-tabbar-item replace to="/" icon="home-o">主页</van-tabbar-item>
+    <van-tabbar-item replace to="/find" icon="search">发现</van-tabbar-item>
     <van-tabbar-item icon="friends-o">标签</van-tabbar-item>
     <van-tabbar-item replace to="/user" icon="user-o">我</van-tabbar-item>
   </van-tabbar>

@@ -9,6 +9,7 @@ import com.axr.starrybackend.model.request.User.UserLoginRequest;
 import com.axr.starrybackend.model.request.User.UserRegisterRequest;
 import com.axr.starrybackend.model.vo.User.UserVO;
 import com.axr.starrybackend.service.UserService;
+import com.axr.starrybackend.utils.Algorithm;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,8 +18,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -39,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public Long userRegister(UserRegisterRequest userRegisterRequest) {
         String userAccount = userRegisterRequest.getUserAccount();
-        String password = userRegisterRequest.getPassword();
+        String password = userRegisterRequest.getUserPassword();
         String confirmPassword = userRegisterRequest.getConfirmPassword();
         if (StringUtils.isAnyBlank(userAccount, password, confirmPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容不能为空哦~");
@@ -170,6 +173,59 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = new User();
         BeanUtils.copyProperties(userVO, user);
         return user;
+    }
+
+    /**
+     * 根据关键词搜索用户（列表）
+     * @param keyword
+     * @return
+     */
+    @Override
+    public List<UserVO> searchUsers(String keyword) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(User::getUsername, keyword)
+                .or()
+                .like(User::getTags, keyword)
+                .or()
+                .like(User::getProfile, keyword);
+        List<User> list = this.list(queryWrapper);
+        return list.stream().map(this::getSafetyUser).toList();
+    }
+
+    /**
+     * 用户推荐
+     *
+     * @param currentUser
+     * @return
+     */
+    @Override
+    public List<UserVO> recommendUsers(User currentUser) {
+        if (StringUtils.isEmpty(currentUser.getTags())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户标签为空~");
+        }
+
+        Set<String> currentUserTags = Algorithm.parseTags(currentUser.getTags());
+
+        // 获取所有用户（排除当前用户）
+        List<User> allUsers = list(new QueryWrapper<User>().ne("id", currentUser.getId()));
+
+        // 计算每个用户与当前用户的标签相似度
+        Map<User, Integer> userSimilarityMap = new HashMap<>();
+        for (User user : allUsers) {
+            Set<String> userTags = Algorithm.parseTags(user.getTags());
+            int similarity = Algorithm.calculateSimilarity(currentUserTags, userTags);
+            userSimilarityMap.put(user, similarity);
+        }
+
+        // 排序并取前10
+        List<User> userList = userSimilarityMap.entrySet().stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getValue(), e1.getValue()))
+                .limit(10)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        List<UserVO> list = userList.stream().map(this::getSafetyUser).toList();
+        return list;
     }
 }
 

@@ -3,7 +3,6 @@ package com.axr.starrybackend.controller;
 import com.axr.starrybackend.common.BaseResponse;
 import com.axr.starrybackend.common.ErrorCode;
 import com.axr.starrybackend.common.ResultUtils;
-import com.axr.starrybackend.constant.UserConstant;
 import com.axr.starrybackend.exception.BusinessException;
 import com.axr.starrybackend.model.domain.User;
 import com.axr.starrybackend.model.request.User.UserLoginRequest;
@@ -17,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -107,5 +108,22 @@ public class UserController {
         BeanUtils.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateUser(user, loginUser);
         return ResultUtils.success(result);
+    }
+
+    @GetMapping("/search")
+    public BaseResponse<List<UserVO>> searchUsers(@RequestParam String keyword) {
+        if (StringUtils.isBlank(keyword.trim())) {
+            throw new BusinessException(ErrorCode.NULL_ERROR, "搜索关键词不能为空");
+        }
+        return ResultUtils.success(userService.searchUsers(keyword));
+    }
+
+    @GetMapping("/recommend")
+    public BaseResponse<List<UserVO>> recommendUsers(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return ResultUtils.success(userService.recommendUsers(loginUser));
     }
 }

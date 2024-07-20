@@ -43,7 +43,7 @@ public class UserUpdateRequest implements Serializable {
     /**
      * 标签 JSON 列表
      */
-//    private String tags;
+    private String tags;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

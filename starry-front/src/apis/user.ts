@@ -12,7 +12,26 @@ export const loginAPI = ({ userAccount, userPassword }: LoginParams) => {
         method: 'POST',
         data: {
             userAccount,
-            userPassword
+            userPassword,
+        }
+    })
+}
+
+interface RegisterParams {
+    userAccount: string;
+    userPassword: string;
+    confirmPassword: string;
+
+}
+
+export const registerAPI = ({ userAccount, userPassword, confirmPassword }: RegisterParams) => {
+    return request({
+        url: '/user/register',
+        method: 'POST',
+        data: {
+            userAccount,
+            userPassword,
+            confirmPassword,
         }
     })
 }

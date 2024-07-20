@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {getCurrentUser} from "@/apis/user";
 import {showFailToast, showSuccessToast} from "vant";
@@ -15,6 +15,23 @@ const editUser = ref({
     }
 )
 
+// 计算属性，用于转换显示值
+const displayValue = computed({
+  get() {
+    if (editUser.value.editKey === 'gender') {
+      return editUser.value.currentValue === '1' ? '女' : '男';
+    }
+    return editUser.value.currentValue;
+  },
+  set(newValue) {
+    if (editUser.value.editKey === 'gender') {
+      editUser.value.currentValue = newValue === '女' ? '1' : '0';
+    } else {
+      editUser.value.currentValue = newValue;
+    }
+  }
+});
+
 const onSubmit = async () => {
   const currentUser = await getCurrentUser();
   console.log(currentUser,'currentUser');
@@ -23,11 +40,12 @@ const onSubmit = async () => {
     router.replace('/user/login');
     return
   }
+
   const res = await request.post('/user/update', {
     'id': currentUser.data.id,
     [editUser.value.editKey]: editUser.value.currentValue,
   })
-  // console.log(res);
+  // @ts-ignore
   if (res.code === 0 && res.data > 0) {
     showSuccessToast('修改成功！');
     router.back();
@@ -40,8 +58,9 @@ const onSubmit = async () => {
 
 <template>
   <van-form @submit="onSubmit">
+
     <van-field
-        v-model="editUser.currentValue"
+        v-model="displayValue"
         :name="editUser.editKey"
         :label="editUser.editName"
         :placeholder="`请输入${editUser.editName}`"

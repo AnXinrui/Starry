@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {getCurrentUser, loginAPI} from "@/apis/user";
+import {getCurrentUser, loginAPI, registerAPI} from "@/apis/user";
 // import request from '@/utils/http';
 import {showFailToast, showSuccessToast} from "vant";
 import {BaseResponse} from "@/modules/BaseResponse"
@@ -10,25 +10,20 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 const userAccount = ref('');
 const userPassword = ref('');
+const confirmPassword = ref('');
 
-onMounted(async () => {
-  const res = await getCurrentUser();
-  if (res) {
-    // 如果获取当前用户失败或用户不存在，重定向到登录页面
-    router.push('/user');
-  }
-})
-
-const onSubmit = async() => {
+const onSubmit = async(value) => {
+  console.log(value)
   //@ts-ignore
-  const res:BaseResponse = await loginAPI({
+  const res:BaseResponse = await registerAPI({
     userAccount: userAccount.value,
     userPassword: userPassword.value,
+    confirmPassword: confirmPassword.value,
   })
 
   if (res && res.code == 0 && res.data) {
-    showSuccessToast("登录成功!");
-    router.push("/user");
+    showSuccessToast("注册成功!");
+    router.push("/user/login");
   } else {
     if (res.description) {
       showFailToast(res.description)
@@ -37,10 +32,6 @@ const onSubmit = async() => {
     }
   }
 };
-
-const redirectToRegister =()=> {
-  router.replace("/user/register");
-}
 
 
 </script>
@@ -63,29 +54,23 @@ const redirectToRegister =()=> {
           placeholder="密码"
           :rules="[{ required: true, message: '请填写密码' }]"
       />
+      <van-field
+          v-model="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          label="确认密码"
+          placeholder="密码"
+          :rules="[{ required: true, message: '请确认密码' }]"
+      />
     </van-cell-group>
     <div style="margin: 16px;">
       <van-button round block type="primary" native-type="submit">
-        登录
+        注册
       </van-button>
-    </div>
-    <div class="centered-container">
-      <van-row type="flex" justify="center" align="center">
-        <span>没有账号？</span>
-        <van-button type="primary" size="small" @click="redirectToRegister" plain>注册</van-button>
-      </van-row>
     </div>
   </van-form>
 </template>
 
 <style scoped>
-.centered-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-span {
-  margin-right: 8px;
-}
-</style>
+</style>le>

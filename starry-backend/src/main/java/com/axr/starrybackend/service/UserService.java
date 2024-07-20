@@ -7,6 +7,8 @@ import com.axr.starrybackend.model.vo.User.UserVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 /**
 * @author axr
 * @description 针对表【user(用户表)】的数据库操作Service
@@ -20,9 +22,11 @@ public interface UserService extends IService<User> {
 
     UserVO getSafetyUser(User user);
 
-
-
     boolean updateUser(User user, User loginUser);
 
     User getLoginUser(HttpServletRequest request);
+
+    List<UserVO> searchUsers(String keyword);
+
+    List<UserVO> recommendUsers(User currentUser);
 }
