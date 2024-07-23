@@ -16,3 +16,31 @@ CREATE TABLE user (
     userRole TINYINT DEFAULT 0 NULL COMMENT '用户角色 0：普通用户 1：管理员',
     tags VARCHAR(1024) NULL COMMENT '标签 JSON 列表'
 ) COMMENT '用户表';
+
+
+
+create table team
+(
+    id          bigint auto_increment           primary key comment 'ID',
+    name        varchar(30)                       not null comment '队伍名称',
+    description varchar(124)                      null comment '描述',
+    maxNum      int      default 5                 null comment '最大人数',
+    expireTime  datetime                           null comment '过期时间',
+    userId      bigint                             null comment '创建用户id',
+    status      int                                null comment '状态 [0: 公开， 1：加密]',
+    password    varchar(30)                       null comment '密码',
+    createTime datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment'更新时间',
+    isDelete    tinyint  default 0                 not null comment '是否删除'
+)   comment '队伍表';
+
+
+
+CREATE TABLE user_team (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
+    userId BIGINT NULL COMMENT '用户id',
+    teamId BIGINT NULL COMMENT '队伍id',
+    expireTime DATETIME NULL COMMENT '过期时间',
+    joinTime DATETIME DEFAULT CURRENT_TIMESTAMP NULL COMMENT '加入时间',
+    isDelete TINYINT DEFAULT 0 NOT NULL COMMENT '是否删除'
+) COMMENT='用户队伍关系';

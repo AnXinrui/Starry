@@ -170,6 +170,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getLoginUser(HttpServletRequest request) {
         UserVO userVO = (UserVO) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userVO == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
         User user = new User();
         BeanUtils.copyProperties(userVO, user);
         return user;
