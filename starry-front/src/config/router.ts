@@ -11,6 +11,10 @@ import SearchUserPage from "@/pages/user/SearchUserPage.vue";
 import FindPage from "../pages/FindPage.vue";
 import UserRecommend from "../components/UserRecommend.vue";
 import TeamFind from "../components/TeamFind.vue";
+import TeamAddPage from "../pages/Team/TeamAddPage.vue";
+import UserTeamPage from "../pages/Team/UserTeamPage.vue";
+import CreatedTeams from "../components/CreatedTeams.vue";
+import JoinedTeams from "../components/JoinedTeams.vue";
 
 const routes: Array<RouteRecordRaw>  = [
     { path: '/', component: IndexPage },
@@ -28,17 +32,25 @@ const routes: Array<RouteRecordRaw>  = [
             {
                 // 当 /user/:id/profile 匹配成功
                 // UserProfile 将被渲染到 User 的 <router-view> 内部
-                path: '/find',
+                path: '',
                 component: UserRecommend,
             },
             {
                 // 当 /user/:id/posts 匹配成功
                 // UserPosts 将被渲染到 User 的 <router-view> 内部
-                path: '/team-find',
+                path: 'team-find',
                 component: TeamFind,
             },
         ],
     },
+    { path: '/team/add', component: TeamAddPage },
+    { path: '/team/user-team', component: UserTeamPage,
+        children: [
+            { path: '/team/created-teams', component: CreatedTeams },
+            { path: '/team/joined-teams', component: JoinedTeams },
+        ],
+    },
+
     { path: '/test', component: TestPage },
 ]
 

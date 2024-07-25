@@ -6,12 +6,14 @@ import com.axr.starrybackend.common.ResultUtils;
 import com.axr.starrybackend.exception.BusinessException;
 import com.axr.starrybackend.model.domain.Team;
 import com.axr.starrybackend.model.domain.User;
+import com.axr.starrybackend.model.domain.UserTeam;
 import com.axr.starrybackend.model.request.Team.TeamAddRequest;
 import com.axr.starrybackend.model.request.Team.TeamJoinRequest;
 import com.axr.starrybackend.model.request.Team.TeamUpdateRequest;
 import com.axr.starrybackend.model.request.Team.TeamVO;
 import com.axr.starrybackend.service.TeamService;
 import com.axr.starrybackend.service.UserService;
+import com.axr.starrybackend.service.UserTeamService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +21,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +39,8 @@ public class TeamController {
     private UserService userService;
     @Resource
     private TeamService teamService;
+    @Resource
+    private UserTeamService userTeamService;
 
     @PostMapping("/add")
     public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
@@ -118,5 +125,51 @@ public class TeamController {
     public BaseResponse<List<TeamVO>> listTeams(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         return ResultUtils.success(teamService.listTeams(loginUser));
+    }
+    @GetMapping("/list/my-join")
+    public BaseResponse<List<TeamVO>> listJoinTeams(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+        userTeamQueryWrapper.eq("userId", loginUser.getId());
+        userTeamQueryWrapper.gt("expireTime", LocalDateTime.now()).or().isNull("expireTime");
+        List<UserTeam> userTeams = userTeamService.list(userTeamQueryWrapper);
+        List<TeamVO> list = new ArrayList<>();
+        for (UserTeam userTeam : userTeams) {
+            Team team = teamService.getById(userTeam.getTeamId());
+            TeamVO teamVO = new TeamVO();
+            BeanUtils.copyProperties(team, teamVO);
+            userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("teamId", team.getId());
+            long count = userTeamService.count(userTeamQueryWrapper);
+            teamVO.setHasJoinNum((int) count);
+            userTeamQueryWrapper.eq("userId", loginUser.getId());
+            count = userTeamService.count(userTeamQueryWrapper);
+            teamVO.setHasJoin(count > 0);
+            list.add(teamVO);
+        }
+        return ResultUtils.success(list);
+    }
+
+    @GetMapping("/list/my-create")
+    public BaseResponse<List<TeamVO>> listCreateTeams(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<UserTeam> userTeamQueryWrapper;
+        QueryWrapper<Team> teamQueryWrapper = new QueryWrapper<>();
+        teamQueryWrapper.eq("userId", loginUser.getId());
+        List<Team> teams = teamService.list(teamQueryWrapper);
+        List<TeamVO> list = new ArrayList<>();
+        for (Team team : teams) {
+            TeamVO teamVO = new TeamVO();
+            BeanUtils.copyProperties(team, teamVO);
+            userTeamQueryWrapper = new QueryWrapper<>();
+            userTeamQueryWrapper.eq("teamId", team.getId());
+            long count = userTeamService.count(userTeamQueryWrapper);
+            teamVO.setHasJoinNum((int) count);
+            userTeamQueryWrapper.eq("userId", loginUser.getId());
+            count = userTeamService.count(userTeamQueryWrapper);
+            teamVO.setHasJoin(count > 0);
+            list.add(teamVO);
+        }
+        return ResultUtils.success(list);
     }
 }

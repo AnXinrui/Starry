@@ -15,9 +15,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -31,6 +34,9 @@ import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 public class UserController {
     @Resource
     private UserService userService;
+    @Resource
+    private RedisTemplate redisTemplate;
+
 
     /**
      * 用户注册
@@ -124,6 +130,19 @@ public class UserController {
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);
         }
-        return ResultUtils.success(userService.recommendUsers(loginUser));
+        // 如果有缓存， 直接读取缓存
+        String redisKey = String.format("starry:user:recommend:%s", loginUser.getId());
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        List<UserVO> userVOList = (List<UserVO>) redisTemplate.opsForValue().get(redisKey);
+        if (userVOList != null) {
+            return ResultUtils.success(userVOList);
+        }
+        userVOList = userService.recommendUsers(loginUser);
+        try {
+            valueOperations.set(redisKey, userVOList, 6, TimeUnit.HOURS); // 内存淘汰
+        } catch (Exception e) {
+            log.error("redis key error: {}", e);
+        }
+        return ResultUtils.success(userVOList);
     }
 }

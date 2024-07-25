@@ -99,6 +99,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         Long userId = loginUser.getId();
         BeanUtils.copyProperties(teamAddRequest, team);
         team.setUserId(userId);
+        team.setUsername(loginUser.getUsername());
         boolean result = this.save(team);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "添加队伍失败");

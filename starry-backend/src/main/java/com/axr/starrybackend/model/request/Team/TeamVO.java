@@ -40,7 +40,7 @@ public class TeamVO implements Serializable {
     /**
      * 创建用户id
      */
-//    private Long userId;
+    private Long userId;
 
     /**
      * 状态 0: 公开， 1：加密

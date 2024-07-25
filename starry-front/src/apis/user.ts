@@ -1,4 +1,8 @@
-import request from '../utils/http';
+import request from '@/utils/http';
+import {showFailToast} from "vant";
+import {useUserStore} from "../stores/userStore";
+import router from "@/config/router";
+
 
 
 interface LoginParams {
@@ -46,7 +50,15 @@ export const getCurrentUser = async (): Promise<UserResponse | null> => {
     const res: UserResponse = await request.get('/user/current');
     if (res.code === 0) {
         return res;
+    } else {
+        showFailToast('获取用户信息失败！')
     }
     return null;
+    // const userStore = useUserStore();
+    // await useUserStore();
+    // if (!userStore.user) {
+    //     router.push('/user/login');
+    //     return;
+    // }
 };
 

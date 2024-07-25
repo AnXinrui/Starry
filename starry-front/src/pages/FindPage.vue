@@ -10,7 +10,7 @@ const onClickTab = ({ title }) => showToast(title);
 <template>
   <van-tabs v-model:active="active" @click-tab="onClickTab">
     <van-tab to="/find" title="伙伴推荐" />
-    <van-tab to='/team-find' title="学习小队" />
+    <van-tab to='/find/team-find' title="学习小队" />
   </van-tabs>
 
   <RouterView/>

@@ -75,6 +75,7 @@ const changeInfo = () => {
       </van-cell>
       <van-cell title="用户账号" :value="user.userAccount"/>
       <van-cell title="性别" :value="genderLabel"/>
+      <van-cell title="我的队伍" is-link to="/team/user-team" />
       <van-cell title="积分" :value="user.rating"/>
       <van-cell title="星星⭐签" class="tag-cell" is-link value="重新选择" to="/user/tags" />
       <div class="tag-container">
