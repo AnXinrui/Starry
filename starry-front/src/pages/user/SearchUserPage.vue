@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import {useRouter} from "vue-router";
-import request from '@/utils/http';
+import request from '@/utils/request.ts';
 
 const router = useRouter();
 const value = ref('');

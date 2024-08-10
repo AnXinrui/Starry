@@ -18,6 +18,8 @@ import com.axr.starrybackend.service.TeamService;
 import com.axr.starrybackend.mapper.TeamMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author axr
@@ -42,6 +45,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     private UserService userService;
     @Resource
     private UserTeamService userTeamService;
+    @Resource
+    private RedissonClient redissonClient;
 
     /**
      * 创建队伍
@@ -129,6 +134,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean quitTeam(Long teamId, User loginUser) {
         Team team = getTeamById(teamId);
         if (team.getUserId().equals(loginUser.getId())) {
@@ -224,18 +230,15 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean joinTeam(Long teamId, String password, User loginUser) {
         Team team = this.getTeamById(teamId);
         if (team == null) {
             throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
         }
 
-        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
-        userTeamQueryWrapper.eq("teamId", teamId);
-        userTeamQueryWrapper.eq("userId", loginUser.getId());
-        long count = userTeamService.count(userTeamQueryWrapper);
-        if (count > 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "已经加入过该队伍");
+        if (team.getExpireTime() != null && team.getExpireTime().isBefore(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍已过期");
         }
 
         if (TeamStatusEnum.SECRET.equals(TeamStatusEnum.getEnumByValue(team.getStatus()))) {
@@ -247,12 +250,45 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             }
         }
 
-        UserTeam userTeam = new UserTeam();
-        userTeam.setUserId(loginUser.getId());
-        userTeam.setTeamId(teamId);
-        userTeam.setExpireTime(team.getExpireTime());
 
-        return userTeamService.save(userTeam);
+
+        long userId = loginUser.getId();
+        RLock lock = redissonClient.getLock("starry:join_team:");
+        try {
+            // 抢到锁
+            while (true) {
+                if (lock.tryLock(0, -1, TimeUnit.MILLISECONDS)) {
+                    QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+                    userTeamQueryWrapper.eq("userId", userId);
+                    Long joinNum = userTeamService.count(userTeamQueryWrapper);
+                    if (joinNum >= 5) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多加入5个队伍");
+                    }
+
+                    userTeamQueryWrapper.eq("teamId", teamId);
+                    long count = userTeamService.count(userTeamQueryWrapper);
+                    if (count > 0) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "已经加入过该队伍");
+                    }
+
+                    UserTeam userTeam = new UserTeam();
+                    userTeam.setUserId(loginUser.getId());
+                    userTeam.setTeamId(teamId);
+                    userTeam.setExpireTime(team.getExpireTime());
+
+                    return userTeamService.save(userTeam);
+                }
+            }
+        } catch (InterruptedException e) {
+            log.error("doCacheRecommendUser error", e);
+            return false;
+        } finally {
+            // 只能释放自己的锁
+            if (lock.isHeldByCurrentThread()) {
+                // System.out.println("unLock: " + Thread.currentThread().getId());
+                lock.unlock();
+            }
+        }
     }
 
     @Override

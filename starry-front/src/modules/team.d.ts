@@ -7,5 +7,6 @@ export interface Team {
     hasJoinNum: number;
     maxNum: number;
     expireTime: string;
+    status: number;
     hasJoin: boolean;
 }

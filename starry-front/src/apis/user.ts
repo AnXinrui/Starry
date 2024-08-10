@@ -1,6 +1,6 @@
-import request from '@/utils/http';
+import request from '@/utils/request';
 import {showFailToast} from "vant";
-import {useUserStore} from "../stores/userStore";
+import {useUserStore} from "../store/userStore";
 import router from "@/config/router";
 
 

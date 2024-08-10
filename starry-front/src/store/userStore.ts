@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import request from '../utils/http';
+import request from '../utils/request';
 import {UserType} from "../modules/user";
 
 interface UserResponse {

@@ -4,7 +4,7 @@ import {computed, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {getCurrentUser} from "@/apis/user";
 import {showFailToast, showSuccessToast} from "vant";
-import request from '@/utils/http';
+import request from '@/utils/request.ts';
 
 const route = useRoute();
 const router = useRouter();

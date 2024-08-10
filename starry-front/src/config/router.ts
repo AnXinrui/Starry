@@ -2,7 +2,6 @@ import IndexPage from "@/pages/IndexPage.vue";
 import UserLoginPage from "@/pages/user/UserLoginPage.vue";
 import UserPage from "@/pages/user/UserPage.vue";
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
-import TestPage from "@/pages/TestPage.vue";
 import UserUpdatePage from "@/pages/user/UserUpdatePage.vue";
 import UserUpdateEditPage from "@/pages/user/UserUpdateEditPage.vue";
 import UserTagsUpdatePage from "@/pages/user/UserTagsUpdatePage.vue";
@@ -15,6 +14,11 @@ import TeamAddPage from "../pages/Team/TeamAddPage.vue";
 import UserTeamPage from "../pages/Team/UserTeamPage.vue";
 import CreatedTeams from "../components/CreatedTeams.vue";
 import JoinedTeams from "../components/JoinedTeams.vue";
+import ModoroPage from "../pages/others/ModoroPage.vue";
+import TestPage from "../pages/TestPage.vue";
+import UserBlogPage from "../pages/user/UserBlogPage.vue";
+import TestLogin from "../pages/TestLogin.vue";
+
 
 const routes: Array<RouteRecordRaw>  = [
     { path: '/', component: IndexPage },
@@ -25,6 +29,7 @@ const routes: Array<RouteRecordRaw>  = [
     { path: '/user/update/edit', component: UserUpdateEditPage },
     { path: '/user/tags', component: UserTagsUpdatePage },
     { path: '/user/search', component: SearchUserPage },
+    { path: '/user/blog', component: UserBlogPage },
     {
         path: '/find',
         component: FindPage,
@@ -51,7 +56,9 @@ const routes: Array<RouteRecordRaw>  = [
         ],
     },
 
+    { path: '/modoro', component: ModoroPage },
     { path: '/test', component: TestPage },
+    { path: '/testLogin', component: TestLogin },
 ]
 
 

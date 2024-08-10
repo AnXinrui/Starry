@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import request from '@/utils/http';
+import request from '@/utils/request.ts';
 import {useRouter} from "vue-router";
 import {showFailToast, showSuccessToast} from "vant";
 
@@ -70,13 +70,12 @@ initializeDateTime();
 
 
 const onSubmit = async () => {
-  if (!expireTimeChecked) {
+  if (expireTimeChecked.value===true) {
     form.value.expireTime = null;
   }
-  if (expireTimeChecked && dateResult.value && timeResult.value) {
+  if (expireTimeChecked.value === false && dateResult.value && timeResult.value) {
     form.value.expireTime = dateResult.value + ' ' + timeResult.value;
   }
-
   if (passwordChecked.value === true) {
     form.value.status = 1;
   }

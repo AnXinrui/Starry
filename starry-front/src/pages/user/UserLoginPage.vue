@@ -1,41 +1,58 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {getCurrentUser, loginAPI} from "@/apis/user";
-// import request from '@/utils/http';
+import {onMounted, ref, toRefs} from "vue";
 import {showFailToast, showSuccessToast} from "vant";
-import {BaseResponse} from "@/modules/BaseResponse"
 import {useRouter} from "vue-router";
+import useUserStore from "@/store/modules/user";
 
 
 const router = useRouter();
+const userStore = useUserStore();
 const userAccount = ref('');
 const userPassword = ref('');
 
 onMounted(async () => {
-  const res = await getCurrentUser();
-  if (res) {
-    // 如果获取当前用户失败或用户不存在，重定向到登录页面
-    router.push('/user');
+  if (userStore.user == null) {
+    // await userStore.getCurrentUserInfo();
+    try {
+      await userStore.getCurrentUserInfo();
+    } catch (error) {
+
+    }
+  }
+  if (userStore.user) {
+    router.push("/user");
   }
 })
 
 const onSubmit = async() => {
-  //@ts-ignore
-  const res:BaseResponse = await loginAPI({
-    userAccount: userAccount.value,
-    userPassword: userPassword.value,
-  })
-
-  if (res && res.code == 0 && res.data) {
+  try {
+    await userStore.userLogin({
+      userAccount: userAccount.value,
+      userPassword: userPassword.value,
+    })
     showSuccessToast("登录成功!");
     router.push("/user");
-  } else {
-    if (res.description) {
-      showFailToast(res.description)
-    } else {
-      showFailToast("登录失败!!!")
-    }
+    userStore.getCurrentUserInfo();
+  } catch (error) {
+    showFailToast("登录失败!\n" + error.message);
   }
+
+  //@ts-ignore
+  // const res:BaseResponse = await loginAPI({
+  //   userAccount: userAccount.value,
+  //   userPassword: userPassword.value,
+  // })
+  //
+  // if (res && res.code == 0 && res.data) {
+  //   showSuccessToast("登录成功!");
+  //   router.push("/user");
+  // } else {
+  //   if (res.description) {
+  //     showFailToast(res.description)
+  //   } else {
+  //     showFailToast("登录失败!!!")
+  //   }
+  // }
 };
 
 const redirectToRegister =()=> {

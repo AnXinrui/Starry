@@ -1,4 +1,4 @@
-// stores/counter.js
+// store/counter.js
 import { defineStore } from 'pinia'
 
 export const useCounterStore = defineStore('counter', {

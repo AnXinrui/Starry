@@ -1,0 +1,58 @@
+<!--<script lang="ts" setup>-->
+<!--import {onMounted, ref} from "vue";-->
+<!--import request from '@/utils/request'-->
+
+<!--let ws: WebSocket;-->
+<!--const username = ref('');-->
+<!--let userList = ref([])-->
+
+<!--onMounted(async () => {-->
+<!--  username.value = await request.get('/user/getUsername');-->
+
+<!--  ws = new WebSocket("ws://localhost:8080/chat");-->
+
+<!--  ws.onmessage = (evt) => {-->
+<!--    //获取服务端推送过来的消息-->
+<!--    var dataStr = evt.data;-->
+<!--    //将dataStr 转换为json对象-->
+<!--    var res = JSON.parse(dataStr);-->
+<!--    console.log(res)-->
+<!--    //判断是否是系统消息-->
+<!--    if (res.system) {-->
+<!--      //系统消息  好友列表展示-->
+<!--      var names = res.message;-->
+<!--      // userList = ref([]);-->
+<!--      for (let i = 0; i < names.length; i++) {-->
+<!--        if(names[i] != username.value) {-->
+<!--          userList.value.push(names[i]);-->
+<!--          console.log(names[i]);-->
+<!--        }-->
+<!--      }-->
+<!--    } else {-->
+<!--      console.log(123)-->
+<!--      //非系统消息-->
+<!--      // var history = sessionStorage.getItem(res.fromName);-->
+<!--      // if (!history) {-->
+<!--      //   historyMessage = [res];-->
+<!--      // } else {-->
+<!--      //   historyMessage.push(res);-->
+<!--      // }-->
+
+<!--    }-->
+<!--  }-->
+<!--})-->
+
+<!--const showChat = (username) => {-->
+<!--  console.log(username)-->
+<!--}-->
+<!--</script>-->
+<!--<template>-->
+<!--  <div>currentUser: {{ username }}</div>-->
+<!--  <div>-->
+<!--    <div v-for="username in userList">-->
+<!--      <div @click="showChat(username)">-->
+<!--        {{username}}-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</template>-->

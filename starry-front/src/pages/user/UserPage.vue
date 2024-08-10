@@ -1,51 +1,55 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, ref, toRefs} from 'vue';
 import {getCurrentUser} from '@/apis/user';
-import {UserType} from "@/modules/user.d";
+import {UserType} from "@/apis/user/type";
 import {Cell, CellGroup, Image as VanImage, showFailToast, showSuccessToast} from 'vant';
-import request from '@/utils/http';
+import request from '@/utils/request';
 import {useRouter} from "vue-router";
 import {BaseResponse} from "@/modules/BaseResponse";
+import useUserStore from "@/store/modules/user";
 
 const router = useRouter();
+const userStore = useUserStore();
+const { user } = toRefs(userStore);
 
-const user = ref<UserType | null>(null);
 onMounted(async () => {
-  const res = await getCurrentUser();
-  // console.log(res, 'user');
-  if (!res) {
-    // 如果获取当前用户失败或用户不存在，重定向到登录页面
+  if (userStore.user == null) {
+    try {
+      await userStore.getCurrentUserInfo();
+    } catch (error) {
+      // 处理获取用户信息失败的情况
+      router.push('/user/login');
+    }
+  }
+  if (user.value == null) {
     router.push('/user/login');
   }
-  if (res && res.data) {
-    user.value = res.data;
-  }
-})
-// const tags = user.value.tags;
-// console.log(tags);
-
-// const user = ref({
-//   avatar: 'https://cdn.acwing.com/media/user/profile/photo/246711_lg_d5a2b0e841.jpg',
-//   username: '张三',
-//   userAccount: 'zhangsan',
-//   gender: '男',
-//   signature: '这是一段个性签名',
-//   points: 1000
-// });
-
-const genderLabel = computed(() => {
-  return user.value.gender === 0 ? '男' : '女';
 });
 
-const tags = computed(()=> {
-  return JSON.parse(user.value.tags);
-})
+const genderLabel = computed(() => {
+  if (user.value && user.value.gender !== undefined) {
+    return user.value.gender === 0 ? '男' : '女';
+  }
+  return '';
+});
+
+
+const tags = computed(() => {
+  if (user.value && user.value.tags) {
+    return JSON.parse(user.value.tags);
+  }
+  return [];
+});
 
 // 创建 logout 函数
-const userLogout = async () => {
-  request.post<BaseResponse<number>>('/user/logout');
-  showSuccessToast('退出登录');
-  router.push('/user/login');
+const doUserLogout = async () => {
+  try {
+    await userStore.userLogout();
+    showSuccessToast('退出登录');
+    router.push('/user/login');
+  } catch (error: any) {
+    showFailToast(`登录失败!\n${error.message}`);
+  }
 };
 
 const changeInfo = () => {
@@ -75,6 +79,7 @@ const changeInfo = () => {
       </van-cell>
       <van-cell title="用户账号" :value="user.userAccount"/>
       <van-cell title="性别" :value="genderLabel"/>
+      <van-cell title="朋友圈"  is-link to="/user/blog"/>
       <van-cell title="我的队伍" is-link to="/team/user-team" />
       <van-cell title="积分" :value="user.rating"/>
       <van-cell title="星星⭐签" class="tag-cell" is-link value="重新选择" to="/user/tags" />
@@ -102,7 +107,7 @@ const changeInfo = () => {
   <div class="button-container">
     <van-space size="2rem">
       <van-button type="primary" @click="changeInfo">修改信息</van-button>
-      <van-button type="danger" @click="userLogout">退出登陆</van-button>
+      <van-button type="danger" @click="doUserLogout">退出登陆</van-button>
     </van-space>
   </div>
 

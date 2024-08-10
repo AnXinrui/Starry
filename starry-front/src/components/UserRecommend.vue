@@ -1,30 +1,30 @@
 <script setup lang="ts">
 
-import {onMounted, ref} from "vue";
+import {onMounted, ref, toRefs} from "vue";
 import {getCurrentUser} from "@/apis/user";
-import request from '../utils/http';
+import request from '../utils/request';
 import {useRouter} from "vue-router";
 import {showFailToast} from "vant";
-import {useUserStore} from "@/stores/userStore";
+import useUserStore from "@/store/modules/user";
 
 
 const router = useRouter();
-const user = ref();
 const userList = ref([]);
 const userStore = useUserStore(); // 获取 Pinia store
+const { user } = toRefs(userStore);
 
 onMounted(async () => {
-  // 获取当前用户
-  await userStore.getCurrentUser();
-
-  // 检查用户是否存在
-  if (!userStore.user) {
-    router.push('/user/login');
-    return;
+  if (userStore.user == null) {
+    try {
+      await userStore.getCurrentUserInfo();
+    } catch (error) {
+      // 处理获取用户信息失败的情况
+      router.push('/user/login');
+    }
   }
-
-  // 将用户信息赋值给本地变量
-  user.value = userStore.user;
+  if (user.value == null) {
+    router.push('/user/login');
+  }
 
   // 获取推荐用户列表
   try {

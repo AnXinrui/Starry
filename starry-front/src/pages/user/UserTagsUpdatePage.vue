@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { showSuccessToast, showFailToast } from 'vant';
-import request from '@/utils/http';
+import request from '@/utils/request.ts';
 import {getCurrentUser} from "@/apis/user.ts"; // 假设你有一个封装好的请求函数
 
 const activeIds = ref<string[]>([]); // 用于存储选择的标签

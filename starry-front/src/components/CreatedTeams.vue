@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {showFailToast, showToast} from "vant";
 import {onMounted, ref} from "vue";
-import request from '../utils/http';
+import request from '../utils/request.ts';
 import {useRouter} from "vue-router";
 import TeamCardList from "@/components/TeamCardList.vue";
 
