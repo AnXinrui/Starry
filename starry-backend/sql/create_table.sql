@@ -48,16 +48,23 @@ CREATE TABLE user_team (
 
 create table blog
 (
-    id          bigint unsigned auto_increment comment '主键'
+    id          bigint auto_increment comment '主键'
         primary key,
-    shop_id     bigint                                   not null comment '商户id',
-    user_id     bigint unsigned                          not null comment '用户id',
-    title       varchar(255) collate utf8mb4_unicode_ci  not null comment '标题',
-    images      varchar(2048)                            not null comment '探店的照片，最多9张，多张以","隔开',
-    content     varchar(2048) collate utf8mb4_unicode_ci not null comment '探店的文字描述',
-    liked       int unsigned default '0'                 null comment '点赞数量',
-    comments    int unsigned                             null comment '评论数量',
-    create_time timestamp    default CURRENT_TIMESTAMP   not null comment '创建时间',
-    update_time timestamp    default CURRENT_TIMESTAMP   not null on update CURRENT_TIMESTAMP comment '更新时间'
+    user_id     bigint                         not null comment '用户id',
+    images      varchar(300)                            not null comment '图片',
+    content     varchar(300) collate utf8mb4_unicode_ci not null comment '探店的文字描述',
+    liked       int default '0'                 null comment '点赞数量',
+    comments    int                             null comment '评论数量'
+) collate = utf8mb4_general_ci
+    COMMENT='博客';
+
+create table blog_comments
+(
+    id          bigint  auto_increment comment '主键'
+        primary key,
+    user_id     bigint                   not null comment '用户id',
+    blog_id     bigint                   not null comment '博客id',
+    content     varchar(255)                        not null comment '回复的内容'
 )
-    collate = utf8mb4_general_ci;
+    collate = utf8mb4_general_ci COMMENT='博客评论';
+

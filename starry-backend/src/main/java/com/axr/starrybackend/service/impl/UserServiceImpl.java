@@ -97,8 +97,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号长度不符合要求！");
         }
         if (userPassword.length() < 6 || userPassword.length() > 20) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码长度不符合要求！");
-        }
+        throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码长度不符合要求！");
+    }
         // 账号不包含特殊字符
         String validPattern = "[ _`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
@@ -118,6 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         UserVO safetyUser = this.getSafetyUser(user);
 
+        // 将用户信息存入 httpsession
         request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
 
         return safetyUser;

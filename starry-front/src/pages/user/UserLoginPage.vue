@@ -12,7 +12,6 @@ const userPassword = ref('');
 
 onMounted(async () => {
   if (userStore.user == null) {
-    // await userStore.getCurrentUserInfo();
     try {
       await userStore.getCurrentUserInfo();
     } catch (error) {
@@ -36,23 +35,6 @@ const onSubmit = async() => {
   } catch (error) {
     showFailToast("登录失败!\n" + error.message);
   }
-
-  //@ts-ignore
-  // const res:BaseResponse = await loginAPI({
-  //   userAccount: userAccount.value,
-  //   userPassword: userPassword.value,
-  // })
-  //
-  // if (res && res.code == 0 && res.data) {
-  //   showSuccessToast("登录成功!");
-  //   router.push("/user");
-  // } else {
-  //   if (res.description) {
-  //     showFailToast(res.description)
-  //   } else {
-  //     showFailToast("登录失败!!!")
-  //   }
-  // }
 };
 
 const redirectToRegister =()=> {
