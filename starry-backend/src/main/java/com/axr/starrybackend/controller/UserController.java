@@ -41,7 +41,6 @@ public class UserController {
     /**
      * 用户注册
      * @param userRegisterRequest
-     * @return
      */
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
@@ -112,7 +111,7 @@ public class UserController {
         }
         User user = new User();
         BeanUtils.copyProperties(userUpdateRequest, user);
-        boolean result = userService.updateUser(user, loginUser);
+        boolean result = userService.updateUser(user, loginUser, request);
         return ResultUtils.success(result);
     }
 

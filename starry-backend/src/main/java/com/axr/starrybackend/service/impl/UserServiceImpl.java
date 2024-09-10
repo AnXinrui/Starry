@@ -1,5 +1,4 @@
 package com.axr.starrybackend.service.impl;
-import java.time.LocalDateTime;
 
 import com.axr.starrybackend.common.ErrorCode;
 import com.axr.starrybackend.exception.BusinessException;
@@ -18,7 +17,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,7 +29,7 @@ import java.util.stream.Collectors;
 import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
-* @author DELL
+* @author axr
 * @description 针对表【user(用户表)】的数据库操作Service实现
 * @createDate 2024-07-17 21:41:20
 */
@@ -151,7 +154,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public boolean updateUser(User user, User loginUser) {
+    public boolean updateUser(User user, User loginUser, HttpServletRequest request) {
         Long userId = user.getId();
         if (!userId.equals(loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH);
@@ -160,6 +163,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新失败，请稍后再试~");
         }
+        user = this.getById(userId);
+        UserVO safetyUser = getSafetyUser(user);
+        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
         return result;
     }
 
@@ -205,9 +211,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public List<UserVO> recommendUsers(User currentUser) {
-        if (StringUtils.isEmpty(currentUser.getTags())) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户标签为空~");
-        }
+//        if (StringUtils.isEmpty(currentUser.getTags())) {
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户标签为空~");
+//        }
 
         Set<String> currentUserTags = Algorithm.parseTags(currentUser.getTags());
 

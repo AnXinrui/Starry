@@ -22,7 +22,7 @@ public interface UserService extends IService<User> {
 
     UserVO getSafetyUser(User user);
 
-    boolean updateUser(User user, User loginUser);
+    boolean updateUser(User user, User loginUser, HttpServletRequest request);
 
     User getLoginUser(HttpServletRequest request);
 

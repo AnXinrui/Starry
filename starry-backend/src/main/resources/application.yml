@@ -3,15 +3,15 @@ spring:
     name: starry
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/starry
+    url: jdbc:mysql://192.168.159.101:3306/Starry
     username: root
-    password: 123456
+    password: 123
   session:
     timeout: 86400 # session超时时间
     store-type: redis # session存储类型
   data:
     redis:
-      host: localhost
+      host: 192.168.159.101
       port: 6379
       database: 1
       password: 123456

@@ -13,7 +13,7 @@ const userPassword = ref('');
 const confirmPassword = ref('');
 
 const onSubmit = async(value) => {
-  console.log(value)
+  // console.log(value)
   //@ts-ignore
   const res:BaseResponse = await registerAPI({
     userAccount: userAccount.value,
@@ -23,7 +23,7 @@ const onSubmit = async(value) => {
 
   if (res && res.code == 0 && res.data) {
     showSuccessToast("注册成功!");
-    router.push("/user/login");
+    await router.push("/user/login");
   } else {
     if (res.description) {
       showFailToast(res.description)

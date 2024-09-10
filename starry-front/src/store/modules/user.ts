@@ -27,10 +27,8 @@ const useUserStore = defineStore('user', {
             // 获取当前用户信息
             async getCurrentUserInfo() {
                 const result: BaseResponse = await reqUserInfo();
-
                 if (result.code == 0) {
                     this.user = result.data;
-                    // console.log(this.user, 'update');
                     return 'ok';
                 }
                 else {

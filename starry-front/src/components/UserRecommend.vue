@@ -14,16 +14,11 @@ const userStore = useUserStore(); // 获取 Pinia store
 const { user } = toRefs(userStore);
 
 onMounted(async () => {
-  if (userStore.user == null) {
-    try {
-      await userStore.getCurrentUserInfo();
-    } catch (error) {
-      // 处理获取用户信息失败的情况
-      router.push('/user/login');
-    }
-  }
-  if (user.value == null) {
-    router.push('/user/login');
+  try {
+    await userStore.getCurrentUserInfo();
+  } catch (error) {
+    showFailToast(error.message);
+    await router.push('/user/login');
   }
 
   // 获取推荐用户列表
