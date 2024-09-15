@@ -4,7 +4,7 @@ import {showToast} from "vant";
 
 const is_start = ref(false);
 // const time = ref(1 * 1 * 60 * 1000);
-const time = ref(10 * 1000);
+const time = ref(10 * 1000 * 6 * 25);
 const totTime = ref(time.value);
 const countDown = ref(null);
 

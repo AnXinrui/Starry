@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import BasicLayOut from "./layouts/BasicLayOut.vue";
 </script>
 
@@ -8,5 +7,4 @@ import BasicLayOut from "./layouts/BasicLayOut.vue";
 </template>
 
 <style scoped>
-
 </style>

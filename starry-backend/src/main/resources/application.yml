@@ -3,7 +3,8 @@ spring:
     name: starry
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.159.101:3306/Starry
+#    url: jdbc:mysql://192.168.159.101:3306/Starry
+    url: jdbc:mysql://82.157.80.123:3306/Starry
     username: root
     password: 123
   session:
@@ -11,7 +12,8 @@ spring:
     store-type: redis # session存储类型
   data:
     redis:
-      host: 192.168.159.101
+#      host: 192.168.159.101
+      host: 82.157.80.123
       port: 6379
       database: 1
       password: 123456
@@ -22,12 +24,14 @@ server:
   servlet:
     session:
       cookie:
-        domain: localhost
+#        domain: 192.168.159.101:80
+        same-site: none
+        secure: true
 
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false  # 驼峰命名映射
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl     # 打印sql
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl     # 打印sql
   global-config:
     db-config:
       logic-delete-field: isDelete # 全局逻辑删除字段名
@@ -51,3 +55,5 @@ springdoc:
     - group: 'default'
       paths-to-match: '/**'
       packages-to-scan: com.axr.starrybackend.controller
+
+

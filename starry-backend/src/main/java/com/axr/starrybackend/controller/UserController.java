@@ -12,6 +12,7 @@ import com.axr.starrybackend.model.vo.User.UserVO;
 import com.axr.starrybackend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,13 +31,17 @@ import static com.axr.starrybackend.constant.UserConstant.USER_LOGIN_STATE;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:5173", originPatterns = "*", allowCredentials = "true")
+// @CrossOrigin(origins = "http://localhost:5173", originPatterns = "*", allowCredentials = "true")
 public class UserController {
     @Resource
     private UserService userService;
     @Resource
     private RedisTemplate redisTemplate;
 
+    @GetMapping("/session")
+    public String getSessionId(HttpSession session) {
+        return session.getId();
+    }
 
     /**
      * 用户注册
@@ -67,7 +72,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        log.info("用户登录: 账户{}", userLoginRequest.getUserAccount());
+        log.info("用户登录: 账户{}, sessionID: {}", userLoginRequest.getUserAccount(), request.getSession().getId());
         UserVO user = userService.doLogin(userLoginRequest, request);
         return ResultUtils.success(user);
     }
@@ -88,6 +93,7 @@ public class UserController {
 
     @GetMapping("/current")
     public BaseResponse<UserVO> getCurrentUser(HttpServletRequest request) {
+        log.info("查询当前登录用户， sessionID: {}", request.getSession().getId());
         Object userObject = request.getSession().getAttribute(USER_LOGIN_STATE);
         UserVO userVO = (UserVO) userObject;
         if (userVO == null) {

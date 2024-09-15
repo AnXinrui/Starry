@@ -15,7 +15,7 @@ import UserTeamPage from "../pages/Team/UserTeamPage.vue";
 import CreatedTeams from "../components/CreatedTeams.vue";
 import JoinedTeams from "../components/JoinedTeams.vue";
 import ModoroPage from "../pages/others/ModoroPage.vue";
-import TestPage from "../pages/TestPage.vue";
+import ChatPage from "../pages/ChatPage.vue";
 import UserBlogPage from "../pages/user/UserBlogPage.vue";
 import TestLogin from "../pages/TestLogin.vue";
 
@@ -57,7 +57,7 @@ const routes: Array<RouteRecordRaw>  = [
     },
 
     { path: '/modoro', component: ModoroPage },
-    { path: '/test', component: TestPage },
+    { path: '/chat', component: ChatPage },
     { path: '/testLogin', component: TestLogin },
 ]
 

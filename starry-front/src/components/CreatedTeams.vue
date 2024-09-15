@@ -17,7 +17,7 @@ onMounted(async ()=> {
       teamList.value = res.data;
       // @ts-ignore
     } else if (res.code === 40100) {
-      router.push('/user/login')
+      await router.push('/user/login')
     } else {
       showFailToast('系统错误');
     }

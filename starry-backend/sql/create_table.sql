@@ -1,4 +1,5 @@
 -- 创建数据库
+DROP DATABASE IF EXISTS Starry;
 CREATE DATABASE IF NOT EXISTS Starry CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 使用数据库

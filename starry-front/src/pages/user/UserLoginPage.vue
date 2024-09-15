@@ -30,7 +30,7 @@ const onSubmit = async() => {
       userPassword: userPassword.value,
     })
     showSuccessToast("登录成功!");
-    router.push("/user");
+    await router.push("/user");
     userStore.getCurrentUserInfo();
   } catch (error) {
     showFailToast("登录失败!\n" + error.message);

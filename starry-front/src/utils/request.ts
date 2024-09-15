@@ -1,7 +1,9 @@
 import axios, {AxiosInstance} from 'axios'
 
 const httpInstance:AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080',
+    // baseURL: 'http://localhost:8080',
+    // baseURL: 'http://192.168.159.101:8080
+    baseURL: 'http://82.157.80.123:8080',
     // timeout: 1000,
     // headers: {'X-Custom-Header': 'foobar'}
 });

@@ -17,6 +17,7 @@ const useUserStore = defineStore('user', {
             // 登录
             async userLogin(data: loginFormData) {
                 const result: BaseResponse = await reqLogin(data);
+                console.log(result, 'result')
                 if (result.code == 0) {
                     return 'ok';
                 } else {

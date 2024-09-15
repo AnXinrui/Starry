@@ -38,26 +38,6 @@ onMounted(async () => {
   }
 });
 
-// onMounted(async () => {
-//   const res = await getCurrentUser();
-//   if (!res) {
-//     router.push('/user/login');
-//   }
-//   if (res && res.data) {
-//     user.value = res.data;
-//   }
-//
-//   const res2 = await request({
-//     url: '/user/recommend',
-//     method: 'GET'
-//   })
-//   // @ts-ignore
-//   if (res2 && res2.code === 0) {
-//     userList.value = res2.data;
-//   } else {
-//     showFailToast("系统错误，请重试！");
-//   }
-// })
 </script>
 
 <template>
